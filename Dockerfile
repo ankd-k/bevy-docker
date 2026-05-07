@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     git \
     ca-certificates \
+    unzip \
   && rm -rf /var/lib/apt/lists/*
 
 ARG RUST_VERSION=stable
