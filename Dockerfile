@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 
-ARG RUST_VERSION=1.95.0
+ARG RUST_VERSION=stable
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain ${RUST_VERSION} \
   && . /root/.cargo/env \
   && rustup component add clippy rustfmt \
