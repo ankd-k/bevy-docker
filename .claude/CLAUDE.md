@@ -22,7 +22,7 @@ Four-stage build:
 1. **chef** — Ubuntu 24.04 + all Bevy system packages + Rust toolchain + `cargo-chef` + `mold`
 2. **planner** — runs `cargo chef prepare` to produce `recipe.json` (invalidated only when `Cargo.toml`/`Cargo.lock` change)
 3. **cacher** — runs `cargo chef cook --release` with BuildKit cache mounts (`~/.cargo/registry`, `~/.cargo/git`) to precompile all Bevy dependencies
-4. **final** — copies compiled artifacts and sets `BEVY_PRECOMPILE_TARGET=/deps/target` for consuming containers
+4. **final** — copies compiled artifacts (`/deps/target`) and cargo registry (`~/.cargo/registry`) for consuming containers
 
 The mold linker is configured in `.cargo/config.toml` via `rustflags = ["-C", "link-arg=-fuse-ld=mold"]`.
 

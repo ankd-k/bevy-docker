@@ -48,4 +48,3 @@ RUN --mount=type=cache,target=/root/.cargo/registry,sharing=locked \
 FROM chef AS final
 COPY --from=cacher /deps/target /deps/target
 COPY --from=cacher /root/.cargo/registry /root/.cargo/registry
-ENV CARGO_TARGET_DIR=/deps/target
