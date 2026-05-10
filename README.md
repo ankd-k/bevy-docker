@@ -1,5 +1,8 @@
 # bevy-docker
 
+> [!WARNING]
+> This project is not affiliated with or endorsed by the Bevy project or its maintainers.
+
 Pre-built Docker image for [Bevy](https://bevyengine.org/) CI pipelines. Eliminates the cost of installing Linux system packages and compiling Bevy's dependency tree on every CI run.
 
 **Image**: `ghcr.io/ankd-k/bevy-docker:latest` (public, no auth required)
@@ -9,15 +12,22 @@ Pre-built Docker image for [Bevy](https://bevyengine.org/) CI pipelines. Elimina
 Use this image as a container in your GitHub Actions workflow:
 
 ```yaml
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
 jobs:
   ci:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/ankd-k/bevy-docker:latest
     steps:
-      - uses: actions/checkout@v4
-      - run: cargo check
-      - run: cargo clippy
+      - uses: actions/checkout@v6
+      - run: cargo fmt --check
+      - run: cargo clippy -- -D warnings
       - run: cargo test
 ```
 
@@ -39,11 +49,24 @@ The Dockerfile uses a four-stage build:
 
 The image is automatically rebuilt and pushed to GHCR when `Dockerfile`, `Cargo.toml`, or `Cargo.lock` change on `main`.
 
+## Image tags
+
+| Tag | Description |
+|-----|-------------|
+| `:latest` | Always points to the latest Bevy version |
+| `:bevy-X.Y.Z` | Pinned to a specific Bevy version |
+| `:COMMIT_SHA` | Pinned to a specific build |
+
+Use `:bevy-X.Y.Z` if your project is not on the latest Bevy version:
+
+```yaml
+container:
+  image: ghcr.io/ankd-k/bevy-docker:bevy-0.18.1
+```
+
 ## Updating Bevy version
 
-1. Update `bevy` in `Cargo.toml`
-2. Run `cargo generate-lockfile` to update `Cargo.lock`
-3. Commit and push — CI rebuilds and pushes the new image automatically
+Bevy version updates are handled automatically via Dependabot. When a new Bevy release is published to crates.io, a pull request is opened, CI validates the build, and the PR is merged automatically.
 
 ## Notes
 
