@@ -27,6 +27,12 @@ jobs:
           VERSION=$(rustup run stable rustc --version | awk '{print $2}')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
+      - name: Get Bevy version
+        id: bevy-ver
+        run: |
+          VERSION=$(sed -n 's/^bevy = "\(.*\)"/\1/p' Cargo.toml)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -48,5 +54,5 @@ jobs:
           cache-to: type=gha,mode=max
           tags: |
             ghcr.io/ankd-k/bevy-docker:latest
-            ghcr.io/ankd-k/bevy-docker:rust-${{ steps.rust-ver.outputs.version }}
+            ghcr.io/ankd-k/bevy-docker:bevy-${{ steps.bevy-ver.outputs.version }}
             ghcr.io/ankd-k/bevy-docker:${{ github.sha }}
