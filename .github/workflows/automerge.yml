@@ -1,0 +1,28 @@
+name: Auto-merge Dependabot PRs
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: cargo check
+      - run: cargo clippy -- -D warnings
+      - run: cargo fmt --check
+      - run: cargo test
+
+  automerge:
+    needs: ci
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Enable auto-merge
+        run: gh pr merge --auto --squash "${{ github.event.pull_request.html_url }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
