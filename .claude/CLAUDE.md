@@ -15,6 +15,8 @@ docker buildx build -t bevy-docker .
 
 CI pushes automatically when `Dockerfile`, `Cargo.toml`, or `Cargo.lock` change on `main` (see `.github/workflows/build.yml`).
 
+Bevy version updates are automated via Dependabot (`.github/dependabot.yml`) + auto-merge (`.github/workflows/automerge.yml`). When a new Bevy version is published, a PR is opened automatically, CI validates it, and it is merged without manual intervention.
+
 ## Dockerfile Architecture
 
 Four-stage build:
@@ -35,7 +37,7 @@ jobs:
     container:
       image: ghcr.io/ankd-k/bevy-docker:latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - run: cargo check
 ```
 
@@ -45,11 +47,20 @@ jobs:
 - Omit optional Bevy feature flags — keep the dependency minimal so the cached layers stay broadly applicable
 - `[profile.dev.package."*"]` sets `opt-level = 3` so precompiled deps run fast even in dev builds
 
+## Image Tags
+
+- `:latest` — always the latest Bevy version
+- `:bevy-X.Y.Z` — pinned to a specific Bevy version (primary version identifier for consumers)
+- `:COMMIT_SHA` — pinned to a specific build
+
+Rust version is intentionally not exposed as a tag; it is an internal implementation detail that does not affect consuming projects.
+
 ## Key Design Decisions
 
 - **cargo-chef**: Separates dependency compilation from source compilation so Docker layer cache survives source-only changes.
 - **BuildKit cache mounts** (`--mount=type=cache,sharing=locked`): Persists the cargo registry across builds without baking it into image layers.
 - **mold linker**: Reduces link time ~10× compared to GNU ld; configured globally so consuming projects get the benefit automatically.
+- **Bevy version as the sole version contract**: Cache efficiency is only guaranteed when the consuming project uses the same Bevy version as the image. Ubuntu and Rust versions are internal and not exposed.
 
 ## Documentation
 
