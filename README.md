@@ -1,8 +1,5 @@
 # bevy-docker
 
-> [!WARNING]
-> This project is not affiliated with or endorsed by the Bevy project or its maintainers.
-
 Pre-built Docker image for [Bevy](https://bevyengine.org/) CI pipelines. Eliminates the cost of installing Linux system packages and compiling Bevy's dependency tree on every CI run.
 
 **Image**: `ghcr.io/ankd-k/bevy-docker:latest` (public, no auth required)
